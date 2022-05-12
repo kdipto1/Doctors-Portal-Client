@@ -22,7 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   let from = location.state?.from?.pathname || "/";
-
+//  useeffect added for avoiding browser router error
   useEffect(() => {
     if (user || gUser) {
       console.log(user || gUser);
