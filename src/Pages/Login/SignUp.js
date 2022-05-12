@@ -19,17 +19,17 @@ const SignUp = () => {
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
 
-  // const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+  const [updateProfile, updating, updateError] = useUpdateProfile(auth);
 
   const navigate = useNavigate();
 
   let signInError;
 
-  if (loading || gLoading) {
+  if (loading || gLoading|| updating) {
     return <Loading></Loading>;
   }
 
-  if (error || gError) {
+  if (error || gError|| updateError) {
     signInError = (
       <p className="text-red-500">
         <small>
@@ -45,9 +45,9 @@ const SignUp = () => {
 
   const onSubmit = async (data) => {
     await createUserWithEmailAndPassword(data.email, data.password);
-    // await updateProfile({ displayName: data.name });
+    await updateProfile({ displayName: data.name });
     console.log("update done");
-    // navigate("/appointment");
+    navigate("/appointment");
   };
   return (
     <div className="flex h-screen justify-center items-center">
