@@ -1,48 +1,87 @@
 import React from "react";
-import { useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import {
+  useCreateUserWithEmailAndPassword,
+  useSignInWithGoogle,
+  useUpdateProfile,
+} from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import { useForm } from "react-hook-form";
 import Loading from "../Shared/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const Login = () => {
+const SignUp = () => {
   const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  // const [updateProfile, updating, updateError] = useUpdateProfile(auth);
+
+  const navigate = useNavigate();
 
   let signInError;
+
   if (loading || gLoading) {
-    return <Loading/>
+    return <Loading></Loading>;
   }
+
   if (error || gError) {
     signInError = (
-      <p className="text-red-600">
-        <span>{error?.message || gError?.message}</span>
+      <p className="text-red-500">
+        <small>
+          {error?.message || gError?.message}
+        </small>
       </p>
     );
   }
-  if (user|| gUser) {
-    console.log(user|| gUser);
-  }
-  const onSubmit = (data) => {
-    console.log(data);
-    signInWithEmailAndPassword(data.email, data.password)
-  };
 
+  if (user || gUser) {
+    // console.log(user || gUser);
+  }
+
+  const onSubmit = async (data) => {
+    await createUserWithEmailAndPassword(data.email, data.password);
+    // await updateProfile({ displayName: data.name });
+    console.log("update done");
+    // navigate("/appointment");
+  };
   return (
     <div className="flex h-screen justify-center items-center">
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="text-center text-2xl font-bold">Login</h2>
+          <h2 className="text-center text-2xl font-bold">Sign Up</h2>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-control w-full max-w-xs">
               <label className="label">
-                <span className="label-text">What is your name?</span>
+                <span className="label-text">Name</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="input input-bordered w-full max-w-xs"
+                {...register("name", {
+                  required: {
+                    value: true,
+                    message: "Name is Required",
+                  },
+                })}
+              />
+              <label className="label">
+                {errors.name?.type === "required" && (
+                  <span className="label-text-alt text-red-500">
+                    {errors.name.message}
+                  </span>
+                )}
+              </label>
+            </div>
+
+            <div className="form-control w-full max-w-xs">
+              <label className="label">
+                <span className="label-text">Email</span>
               </label>
               <input
                 type="email"
@@ -55,18 +94,18 @@ const Login = () => {
                   },
                   pattern: {
                     value: /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/,
-                    message: "Provide a valid email address",
+                    message: "Provide a valid Email",
                   },
                 })}
               />
               <label className="label">
                 {errors.email?.type === "required" && (
-                  <span className="label-text-alt text-red-600">
+                  <span className="label-text-alt text-red-500">
                     {errors.email.message}
                   </span>
                 )}
                 {errors.email?.type === "pattern" && (
-                  <span className="label-text-alt text-red-600">
+                  <span className="label-text-alt text-red-500">
                     {errors.email.message}
                   </span>
                 )}
@@ -78,7 +117,7 @@ const Login = () => {
               </label>
               <input
                 type="password"
-                placeholder="Your Password"
+                placeholder="Password"
                 className="input input-bordered w-full max-w-xs"
                 {...register("password", {
                   required: {
@@ -87,18 +126,18 @@ const Login = () => {
                   },
                   minLength: {
                     value: 6,
-                    message: "Password have to be 6 character or longer",
+                    message: "Must be 6 characters or longer",
                   },
                 })}
               />
               <label className="label">
                 {errors.password?.type === "required" && (
-                  <span className="label-text-alt text-red-600">
+                  <span className="label-text-alt text-red-500">
                     {errors.password.message}
                   </span>
                 )}
                 {errors.password?.type === "minLength" && (
-                  <span className="label-text-alt text-red-600">
+                  <span className="label-text-alt text-red-500">
                     {errors.password.message}
                   </span>
                 )}
@@ -106,18 +145,17 @@ const Login = () => {
             </div>
 
             {signInError}
-
             <input
               className="btn w-full max-w-xs text-white"
               type="submit"
-              value="Login"
+              value="Sign Up"
             />
           </form>
           <p>
             <small>
-              New to doctors portal,{" "}
-              <Link className="text-secondary" to="/signup">
-                Create New Account
+              Already have an account?{" "}
+              <Link className="text-primary" to="/login">
+                Please login
               </Link>
             </small>
           </p>
@@ -126,7 +164,7 @@ const Login = () => {
             onClick={() => signInWithGoogle()}
             className="btn btn-outline"
           >
-            Continue With Google
+            Continue with Google
           </button>
         </div>
       </div>
@@ -134,4 +172,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
