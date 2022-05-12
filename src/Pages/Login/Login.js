@@ -1,20 +1,37 @@
 import React from "react";
-import { useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import { useForm } from "react-hook-form";
+import Loading from "../Shared/Loading";
 
 const Login = () => {
-  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+  const [signInWithGoogle, gUser, gLoading, gError] = useSignInWithGoogle(auth);
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
 
-  if (user) {
+  let signInError;
+  if (loading || gLoading) {
+    return <Loading/>
+  }
+  if (error || gError) {
+    signInError = (
+      <p className="text-red-600">
+        <span>{error?.message || gError?.message}</span>
+      </p>
+    );
+  }
+  if (gUser) {
     console.log(user);
   }
-  const onSubmit = (data) => {};
+  const onSubmit = (data) => {
+    console.log(data);
+    signInWithEmailAndPassword(data.email, data.password)
+  };
 
   return (
     <div className="flex h-screen justify-center items-center">
@@ -33,26 +50,63 @@ const Login = () => {
                 {...register("email", {
                   required: {
                     value: true,
-                    message:"Email is Required"
+                    message: "Email is Required",
                   },
                   pattern: {
-                    value: /[A-Za-z]{3}/,
+                    value: /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/,
                     message: "Provide a valid email address",
                   },
                 })}
               />
               <label className="label">
-                <span className="label-text-alt">Alt label</span>
+                {errors.email?.type === "required" && (
+                  <span className="label-text-alt text-red-600">
+                    {errors.email.message}
+                  </span>
+                )}
+                {errors.email?.type === "pattern" && (
+                  <span className="label-text-alt text-red-600">
+                    {errors.email.message}
+                  </span>
+                )}
+              </label>
+            </div>
+            <div className="form-control w-full max-w-xs">
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Your Password"
+                className="input input-bordered w-full max-w-xs"
+                {...register("password", {
+                  required: {
+                    value: true,
+                    message: "Password is Required",
+                  },
+                  minLength: {
+                    value: 6,
+                    message: "Password have to be 6 character or longer",
+                  },
+                })}
+              />
+              <label className="label">
+                {errors.password?.type === "required" && (
+                  <span className="label-text-alt text-red-600">
+                    {errors.password.message}
+                  </span>
+                )}
+                {errors.password?.type === "minLength" && (
+                  <span className="label-text-alt text-red-600">
+                    {errors.password.message}
+                  </span>
+                )}
               </label>
             </div>
 
-            <input />
-            {errors.firstName?.type === "required" && "First name is required"}
+            {signInError}
 
-            <input {...register("lastName", { required: true })} />
-            {errors.lastName && "Last name is required"}
-
-            <input type="submit" />
+            <input className="btn w-full max-w-xs text-white" type="submit" value="Login" />
           </form>
           <div className="divider">OR</div>
           <button
