@@ -1,7 +1,7 @@
 import React from "react";
 import { toast } from "react-toastify";
 
-const UserRow = ({ user, index,refetch }) => {
+const UserRow = ({ user, index, refetch }) => {
   const { email, role } = user;
   const makeAdmin = () => {
     fetch(`http://localhost:5000/user/admin/${email}`, {
@@ -12,9 +12,9 @@ const UserRow = ({ user, index,refetch }) => {
     })
       .then((res) => {
         if (res.status === 403) {
-          toast.error("Failed to make and admin")
+          toast.error("Failed to make and admin");
         }
-        return res.json()
+        return res.json();
       })
       .then((data) => {
         if (data.modifiedCount) {
@@ -28,9 +28,11 @@ const UserRow = ({ user, index,refetch }) => {
       <th>{index + 1}</th>
       <td>{email}</td>
       <td>
-        {role !== "admin" && <button onClick={makeAdmin} className="btn btn-xs">
-          Make Admin
-        </button>}
+        {role !== "admin" && (
+          <button onClick={makeAdmin} className="btn btn-xs">
+            Make Admin
+          </button>
+        )}
       </td>
       <td>
         <button className="btn btn-xs"> Remove user</button>
