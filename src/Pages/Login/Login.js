@@ -28,7 +28,7 @@ const Login = () => {
   //  useffect added for avoiding browser router error
   useEffect(() => {
     if (token) {
-      console.log(user || gUser);
+      // console.log(user || gUser);
       navigate(from, { replace: true });
     }
   }, [token, user, gUser, from, navigate]);

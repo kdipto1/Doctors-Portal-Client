@@ -6,13 +6,26 @@ const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [user] = useAuthState(auth);
   useEffect(() => {
-    fetch(`http://localhost:5000/booking?patient=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => setAppointments(data));
+    fetch(`http://localhost:5000/booking?patient=${user.email}`, {
+      method: "GET",
+      headers: {
+        "authorization": `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    })
+      .then((res) => {
+        console.log("res appo", res);
+        if (res.status === 401 || res.status === 403) {
+          
+        }
+        return res.json()
+      })
+      .then((data) => {
+        setAppointments(data)
+      });
   }, [user]);
   return (
     <div>
-      <h2>my appointments: {appointments.length}</h2>
+      <h2>my appointments: {appointments?.length}</h2>
       <div className="overflow-x-auto">
         <table className="table w-full">
           {/* <!-- head --> */}
@@ -26,7 +39,7 @@ const MyAppointments = () => {
             </tr>
           </thead>
           <tbody>
-            {appointments.map((a, index) => (
+            {appointments?.map((a, index) => (
               <tr key={a._id}>
                 
                 <th>{index + 1}</th>
