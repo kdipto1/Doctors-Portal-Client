@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
+import DeleteConfirmModal from "../Appointment/DeleteConfirmModal";
 import Loading from "../Shared/Loading";
 import DoctorRow from "./DoctorRow";
 
 const ManageDoctors = () => {
+  const [deletingDoctor, setDeletingDoctor] = useState(null)
   const { data: doctors, isLoading, refetch } = useQuery("doctors", () =>
     fetch("http://localhost:5000/doctor", {
       headers: {
@@ -29,12 +31,19 @@ const ManageDoctors = () => {
             </tr>
           </thead>
           <tbody>
-            {
-              doctors?.map((doctor,index) => <DoctorRow refetch={refetch} index={index} key={doctor._id} doctor={doctor}/>)
-            }
+            {doctors?.map((doctor, index) => (
+              <DoctorRow
+                setDeletingDoctor={setDeletingDoctor}
+                refetch={refetch}
+                index={index}
+                key={doctor._id}
+                doctor={doctor}
+              />
+            ))}
           </tbody>
         </table>
       </div>
+      {deletingDoctor && <DeleteConfirmModal setDeletingDoctor={setDeletingDoctor} refetch={refetch} deletingDoctor={deletingDoctor}/>}
     </div>
   );
 };
