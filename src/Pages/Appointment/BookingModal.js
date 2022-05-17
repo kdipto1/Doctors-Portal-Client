@@ -4,7 +4,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
 import auth from "../../firebase.init";
 
-const BookingModal = ({ treatment, date, setTreatment,refetch }) => {
+const BookingModal = ({ treatment, date, setTreatment, refetch }) => {
   const { _id, name, slots } = treatment;
   const [user, loading, error] = useAuthState(auth);
   const formatDate = format(date, "PP");
@@ -22,7 +22,7 @@ const BookingModal = ({ treatment, date, setTreatment,refetch }) => {
       phone: event.target.phone.value,
     };
     //post booking in api
-    fetch("http://localhost:5000/booking", {
+    fetch("https://doctors-portal-server-12.herokuapp.com/booking", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -33,10 +33,11 @@ const BookingModal = ({ treatment, date, setTreatment,refetch }) => {
       .then((data) => {
         console.log(data);
         if (data.success) {
-          toast(`Appointment is set, ${formatDate} at ${slot}`)
-        }
-        else {
-          toast.error(`Already have an appointment on ${data?.booking?.date} at ${data?.booking?.slot}`)
+          toast(`Appointment is set, ${formatDate} at ${slot}`);
+        } else {
+          toast.error(
+            `Already have an appointment on ${data?.booking?.date} at ${data?.booking?.slot}`
+          );
         }
         //to close the modal
         refetch();

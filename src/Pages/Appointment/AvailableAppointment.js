@@ -9,9 +9,17 @@ const AvailableAppointment = ({ date }) => {
   const [treatment, setTreatment] = useState(null);
 
   const formattedDate = format(date, "PP");
-  const { data: services, isLoading, refetch } = useQuery(['available', formattedDate], () => fetch(`http://localhost:5000/available?date=${formattedDate}`).then(res => res.json()))
+  const {
+    data: services,
+    isLoading,
+    refetch,
+  } = useQuery(["available", formattedDate], () =>
+    fetch(
+      `https://doctors-portal-server-12.herokuapp.com/available?date=${formattedDate}`
+    ).then((res) => res.json())
+  );
   if (isLoading) {
-    return <Loading/>
+    return <Loading />;
   }
   return (
     <div>
@@ -19,11 +27,22 @@ const AvailableAppointment = ({ date }) => {
         Available Appointment on {format(date, "PP")}
       </h4>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {
-          services.map(service => <Service setTreatment={setTreatment} service={service} key={service._id}></Service>)
-        }
+        {services.map((service) => (
+          <Service
+            setTreatment={setTreatment}
+            service={service}
+            key={service._id}
+          ></Service>
+        ))}
       </div>
-      {treatment && <BookingModal date={date} setTreatment={setTreatment} treatment={treatment} refetch={refetch}></BookingModal>}
+      {treatment && (
+        <BookingModal
+          date={date}
+          setTreatment={setTreatment}
+          treatment={treatment}
+          refetch={refetch}
+        ></BookingModal>
+      )}
     </div>
   );
 };

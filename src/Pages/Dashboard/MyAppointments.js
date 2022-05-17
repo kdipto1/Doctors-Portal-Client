@@ -9,23 +9,26 @@ const MyAppointments = () => {
   const [user] = useAuthState(auth);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch(`http://localhost:5000/booking?patient=${user.email}`, {
-      method: "GET",
-      headers: {
-        "authorization": `Bearer ${localStorage.getItem('accessToken')}`
+    fetch(
+      `https://doctors-portal-server-12.herokuapp.com/booking?patient=${user.email}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       }
-    })
+    )
       .then((res) => {
         console.log("res appo", res);
         if (res.status === 401 || res.status === 403) {
           signOut(auth);
-          localStorage.removeItem('accessToken');
-          navigate("/")
+          localStorage.removeItem("accessToken");
+          navigate("/");
         }
-        return res.json()
+        return res.json();
       })
       .then((data) => {
-        setAppointments(data)
+        setAppointments(data);
       });
   }, [user]);
   return (
@@ -46,7 +49,6 @@ const MyAppointments = () => {
           <tbody>
             {appointments?.map((a, index) => (
               <tr key={a._id}>
-                
                 <th>{index + 1}</th>
                 <td>{a.patientName}</td>
                 <td>{a.date}</td>
