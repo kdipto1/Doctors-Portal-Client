@@ -30,7 +30,7 @@ const ManageDoctors = () => {
           </thead>
           <tbody>
             {
-              doctors.map((doctor,index) => <DoctorRow refetch={refetch} index={index} key={doctor._id} doctor={doctor}/>)
+              doctors?.map((doctor,index) => <DoctorRow refetch={refetch} index={index} key={doctor._id} doctor={doctor}/>)
             }
           </tbody>
         </table>
