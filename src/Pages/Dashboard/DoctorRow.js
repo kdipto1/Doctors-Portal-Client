@@ -1,10 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
 
-const DoctorRow = ({ doctor, index, refetch,setDeletingDoctor }) => {
+const DoctorRow = ({ doctor, index, refetch, setDeletingDoctor }) => {
   const { name, specialty, img, email } = doctor;
   // const handleDelete = (email) => {
-  //   fetch(`http://localhost:5000/doctor/${email}`, {
+  //   fetch(`https://doctors-portal-server-12.herokuapp.com/doctor/${email}`, {
   //     method: "DELETE",
   //     headers: {
   //       authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -32,10 +32,13 @@ const DoctorRow = ({ doctor, index, refetch,setDeletingDoctor }) => {
       <td>{name}</td>
       <td>{specialty}</td>
       <td>
-        <label onClick={()=>setDeletingDoctor(doctor)} htmlFor="delete-confirm-modal" className="btn btn-xs btn-error">
+        <label
+          onClick={() => setDeletingDoctor(doctor)}
+          htmlFor="delete-confirm-modal"
+          className="btn btn-xs btn-error"
+        >
           Delete
         </label>
-        
       </td>
     </tr>
   );

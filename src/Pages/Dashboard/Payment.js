@@ -6,11 +6,12 @@ import { useParams } from "react-router-dom";
 import Loading from "../Shared/Loading";
 import CheckoutForm from "./CheckoutForm";
 
-const stripePromise = loadStripe("pk_test_51L0gtQCleCCJSf6N0qVeujBBIvuXiFVg1yxwXQdrOAXXpdKUo162kw118PF7rvgnWE49F14H702XyEkS3qYBYoSD004hIsjWXd"
+const stripePromise = loadStripe(
+  "pk_test_51L0gtQCleCCJSf6N0qVeujBBIvuXiFVg1yxwXQdrOAXXpdKUo162kw118PF7rvgnWE49F14H702XyEkS3qYBYoSD004hIsjWXd"
 );
 const Payment = () => {
   const { id } = useParams();
-  const url = `http://localhost:5000/booking/${id}`;
+  const url = `https://doctors-portal-server-12.herokuapp.com/booking/${id}`;
   const {
     data: appointment,
     isLoading,
@@ -33,7 +34,9 @@ const Payment = () => {
           <p className="text-success font-bold">
             Hello, {appointment?.patientName}
           </p>
-          <h2 className="card-title">Please Pay for {appointment?.treatment}</h2>
+          <h2 className="card-title">
+            Please Pay for {appointment?.treatment}
+          </h2>
           <p>
             Your Appointment:{" "}
             <span className="text-orange-700">{appointment?.date}</span> at{" "}

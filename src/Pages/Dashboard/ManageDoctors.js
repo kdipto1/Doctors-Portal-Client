@@ -5,9 +5,13 @@ import Loading from "../Shared/Loading";
 import DoctorRow from "./DoctorRow";
 
 const ManageDoctors = () => {
-  const [deletingDoctor, setDeletingDoctor] = useState(null)
-  const { data: doctors, isLoading, refetch } = useQuery("doctors", () =>
-    fetch("http://localhost:5000/doctor", {
+  const [deletingDoctor, setDeletingDoctor] = useState(null);
+  const {
+    data: doctors,
+    isLoading,
+    refetch,
+  } = useQuery("doctors", () =>
+    fetch("https://doctors-portal-server-12.herokuapp.com/doctor", {
       headers: {
         authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -43,7 +47,13 @@ const ManageDoctors = () => {
           </tbody>
         </table>
       </div>
-      {deletingDoctor && <DeleteConfirmModal setDeletingDoctor={setDeletingDoctor} refetch={refetch} deletingDoctor={deletingDoctor}/>}
+      {deletingDoctor && (
+        <DeleteConfirmModal
+          setDeletingDoctor={setDeletingDoctor}
+          refetch={refetch}
+          deletingDoctor={deletingDoctor}
+        />
+      )}
     </div>
   );
 };

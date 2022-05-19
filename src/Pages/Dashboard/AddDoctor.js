@@ -18,11 +18,13 @@ const AddDoctor = () => {
     register,
     formState: { errors },
     handleSubmit,
-    reset
+    reset,
   } = useForm();
   // react query
   const { data: services, isLoading } = useQuery("services", () =>
-    fetch("http://localhost:5000/service").then((res) => res.json())
+    fetch("https://doctors-portal-server-12.herokuapp.com/service").then(
+      (res) => res.json()
+    )
   );
   if (isLoading) {
     return <Loading />;
@@ -50,11 +52,11 @@ const AddDoctor = () => {
             img: img,
           };
           //send now to database with image url getting from image bb
-          fetch("http://localhost:5000/doctor", {
+          fetch("https://doctors-portal-server-12.herokuapp.com/doctor", {
             method: "POST",
             headers: {
               "content-type": "application/json",
-               authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
             body: JSON.stringify(doctor),
           })
@@ -62,10 +64,9 @@ const AddDoctor = () => {
             .then((inserted) => {
               console.log("doctor post", inserted);
               if (inserted.insertedId) {
-                toast.success("Doctor added successfully")
+                toast.success("Doctor added successfully");
                 reset();
-              }
-              else {
+              } else {
                 toast.error("Failed to add the doctor");
               }
             });

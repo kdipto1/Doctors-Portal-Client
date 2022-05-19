@@ -4,22 +4,26 @@ import React, { useEffect, useState } from "react";
 const CheckoutForm = ({ appointment }) => {
   const [cardError, setCardError] = useState("");
   const [success, setSuccess] = useState("");
+  const [processing, setProcessing] = useState(false);
   const [transactionId, setTransactionId] = useState("");
   const stripe = useStripe();
   const elements = useElements();
   const [clientSecret, setClientSecret] = useState("");
 
-  const { price, patient, patientName } = appointment;
+  const { _id, price, patient, patientName } = appointment;
 
   useEffect(() => {
-    fetch("http://localhost:5000/create-payment-intent", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      body: JSON.stringify({ price }),
-    })
+    fetch(
+      "https://doctors-portal-server-12.herokuapp.com/create-payment-intent",
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ price }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data?.clientSecret) {
@@ -43,6 +47,7 @@ const CheckoutForm = ({ appointment }) => {
     });
     setCardError(error?.message || "");
     setSuccess("");
+    setProcessing(true);
     //confirm card payment
     const { paymentIntent, error: intentError } =
       await stripe.confirmCardPayment(clientSecret, {
@@ -56,13 +61,30 @@ const CheckoutForm = ({ appointment }) => {
       });
     if (intentError) {
       setCardError(intentError?.message);
-      
-    }
-    else {
+      setProcessing(false);
+    } else {
       setCardError("");
-      setTransactionId(paymentIntent?.id)
+      setTransactionId(paymentIntent?.id);
       console.log(paymentIntent);
-      setSuccess("congrats, your payment is completed")
+      setSuccess("congrats, your payment is completed");
+      // store payment info in database
+      const payment = {
+        appointment: _id,
+        transactionId: paymentIntent?.id,
+      };
+      fetch(`https://doctors-portal-server-12.herokuapp.com/booking/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(payment),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setProcessing(false);
+          console.log(data);
+        });
     }
   };
   return (
@@ -87,7 +109,7 @@ const CheckoutForm = ({ appointment }) => {
         <button
           className="btn btn-success btn-sm mt-4"
           type="submit"
-          disabled={!stripe || !clientSecret}
+          disabled={!stripe || !clientSecret || success}
         >
           Pay
         </button>
@@ -96,7 +118,10 @@ const CheckoutForm = ({ appointment }) => {
       {success && (
         <div className="text-green-600">
           <p>{success}</p>
-          <p>Your transaction Id: <span className="text-orange-600 font-bold">{transactionId}</span></p>
+          <p>
+            Your transaction Id:{" "}
+            <span className="text-orange-600 font-bold">{transactionId}</span>
+          </p>
         </div>
       )}
     </>
